@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week06 - Fixed Menu & Footer (Combined)</title>
+    <style>
+        /* --- ตั้งค่าเริ่มต้น (Reset & Base Styles) --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Kanit', 'Segoe UI', sans-serif;
+        }
+        
+        body {
+            background-color: #f0f7ff; /* พื้นหลังเพจสีฟ้าอ่อน */
+            color: #2c3e50;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- 1. FIXED MENU (แถบเมนูติดด้านบน โทนสีน้ำเงิน) --- */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #0056b3; /* สีน้ำเงินหลัก */
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-list {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+        }
+
+        .nav-item a {
+            display: block;
+            color: #e0f0ff;
+            padding: 20px 30px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        /* เอฟเฟกต์เมื่อ Hover เมนูด้านบน */
+        .nav-item a:hover, 
+        .nav-item a.active {
+            color: #ffffff;
+            background-color: #004494; /* น้ำเงินเข้มขึ้นเมื่อเลือก */
+            font-weight: 600;
+        }
+
+        /* --- 2. CONTENT AREA (ส่วนเนื้อหาที่กดเปลี่ยนหน้าได้) --- */
+        .container {
+            margin-top: 80px; /* หลบแถบเมนูที่ติดอยู่ด้านบน */
+            padding: 60px 20px;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* คลาสสลับหน้า: ปิดหน้าอื่น แสดงเฉพาะหน้าที่เลือก */
+        .page-content {
+            display: none; 
+            width: 100%;
+            max-width: 700px;
+        }
+
+        /* หน้าที่ติดคลาส .active-page จะแสดงขึ้นมา */
+        .page-content.active-page {
+            display: block;
+            animation: fadeIn 0.5s ease; /* เพิ่มลูกเล่นการเคลื่อนไหวตอนเปลี่ยนหน้า */
+        }
+
+        /* เอฟเฟกต์ Fade-in ตอนเปลี่ยนหน้า */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ตกแต่งกล่องข้อความ */
+        .card {
+            background: white;
+            padding: 50px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 86, 179, 0.08);
+            border-top: 5px solid #00a2ff;
+            text-align: center;
+        }
+
+        h2 {
+            color: #0056b3;
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+
+        p {
+            font-size: 16px;
+            color: #556980;
+            line-height: 1.8;
+        }
+
+        /* --- 3. FOOTER (ส่วนท้าย พื้นหลังน้ำเงินเข้ม ตัวอักษรสีขาว) --- */
+        .main-footer {
+            background-color: #001a33; /* พื้นหลังน้ำเงินเข้มตามสั่ง */
+            color: #ffffff;            /* ตัวอักษรสีขาว */
+            padding: 50px 20px 20px 20px;
+            border-top: 4px solid #00a2ff;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* แบ่ง 3 คอลัมน์บนจอคอม */
+            gap: 40px;
+        }
+
+        .footer-title {
+            color: #00ccff; /* หัวข้อสีฟ้าสว่างเด่นชัด */
+            font-size: 19px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #003366;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links li a {
+            color: #ffffff;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        /* เอฟเฟกต์ Hover บนเมนู Footer */
+        .footer-links li a:hover {
+            color: #00ccff;             /* เปลี่ยนเป็นสีฟ้าสว่าง */
+            transform: translateX(8px); /* ขยับไปทางขวาเล็กน้อยให้ดูมีมิติ */
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 40px auto 0 auto;
+            padding-top: 20px;
+            border-top: 1px solid #002b54;
+            text-align: center;
+            font-size: 13px;
+            color: #7fa8cc;
+        }
+
+        /* --- 4. RESPONSIVE DESIGN (ปรับแต่งสำหรับหน้าจอมือถือ) --- */
+        @media screen and (max-width: 768px) {
+            /* ปรับเมนูด้านบนบนมือถือ */
+            .nav-list {
+                flex-direction: column;
+                text-align: center;
+            }
+            .nav-item a {
+                padding: 12px 20px;
+                font-size: 16px;
+            }
+            .container {
+                margin-top: 200px; /* ดันเนื้อหาลงมาเพิ่มเนื่องจากเมนูแนวตั้งยาวขึ้น */
+            }
+
+            /* ปรับ Footer บนมือถือให้ยุบเหลือ 1 คอลัมน์แนวตั้ง */
+            .footer-container {
+                grid-template-columns: 1fr;
+                gap: 30px;
+                text-align: center;
+            }
+            .footer-links li a:hover {
+                transform: none; /* บนมือถือไม่จำเป็นต้องเลื่อนขวา */
+                color: #00ccff;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <ul class="nav-list">
+            <li class="nav-item"><a onclick="switchPage('home')" id="menu-home" class="nav-btn active">หน้าแรก</a></li>
+            <li class="nav-item"><a onclick="switchPage('about')" id="menu-about" class="nav-btn">เกี่ยวกับเรา</a></li>
+            <li class="nav-item"><a onclick="switchPage('services')" id="menu-services" class="nav-btn">บริการ</a></li>
+            <li class="nav-item"><a onclick="switchPage('contact')" id="menu-contact" class="nav-btn">ติดต่อ</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        
+        <div id="page-home" class="page-content active-page">
+            <div class="card">
+                <h2>🏠 ยินดีต้อนรับสู่หน้าแรก (Home)</h2>
+                <p>นี่คือเนื้อหาหน้าแรกของระบบเว็บไซต์แบบ Single Page Application โทนสีฟ้าพรีเมียม สบายตา แถบเมนูด้านบนจะถูกล็อกไว้กับหน้าจอเสมอ และส่วนท้ายของเว็บไซต์ด้านล่างสุดได้รับการออกแบบให้รองรับมือถือ</p>
+            </div>
+        </div>
+
+        <div id="page-about" class="page-content">
+            <div class="card">
+                <h2>ℹ️ เกี่ยวกับเรา (About Us)</h2>
+                <p>เราคือหน่วยงานสร้างสรรค์นวัตกรรมเว็บรุ่นใหม่ มุ่งเน้นการเรียนรู้การเขียนโค้ดและพัฒนาเว็บไซต์อย่างเป็นระบบ มีความเชี่ยวชาญในการออกแบบ UI โทนสีฟ้าน้ำเงินที่ทันสมัย</p>
+            </div>
+        </div>
+
+        <div id="page-services" class="page-content">
+            <div class="card">
+                <h2>💼 บริการของเรา (Services)</h2>
+                <p>เราให้บริการออกแบบเว็บไซต์ระบบ Responsive รองรับหน้าจอมือถือ สมาร์ตโฟน แท็บเล็ต และคอมพิวเตอร์ ตกแต่งด้วย CSS คลาสสิก พร้อมระบบเปลี่ยนหน้าเพจด้วย JavaScript ที่รวดเร็ว</p>
+            </div>
+        </div>
+
+        <div id="page-contact" class="page-content">
+            <div class="card">
+                <h2>📞 ติดต่อเรา (Contact)</h2>
+                <p>คุณสามารถติดต่อหน่วยงานของเรา ตลอด 24 ชั่วโมง</p>
+                <p style="margin-top: 15px; font-weight: bold; color: #0056b3;">นางสาวสมฤทัย สินค้า:</p>
+            </div>
+        </div>
+
+    </div>
+
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-block">
+                <h3 class="footer-title">🏢 เกี่ยวกับหน่วยงาน</h3>
+                <p style="color: #d1e2f3; font-size: 14px; line-height: 1.6;">หน่วยงานสร้างสรรค์นวัตกรรมดิจิทัล พัฒนาเว็บแอปพลิเคชันอย่างมีประสิทธิภาพสูงสุด</p>
+            </div>
+            <div class="footer-block">
+                <h3 class="footer-title">🔗 เมนูเว็บไซต์</h3>
+                <ul class="footer-links">
+                    <li><a onclick="switchPage('home')">หน้าแรก</a></li>
+                    <li><a onclick="switchPage('about')">เกี่ยวกับเรา</a></li>
+                    <li><a onclick="switchPage('services')">บริการ</a></li>
+                    <li><a onclick="switchPage('contact')">ติดต่อเรา</a></li>
+                </ul>
+            </div>
+            <div class="footer-block">
+                <h3 class="footer-title">📞 ช่องทางการติดต่อ</h3>
+                <p style="color: #d1e2f3; font-size: 14px; line-height: 1.8;">📍 วิทยาลัยเทคนิคสว่างแดนดิน<br>✉️ support@agency.go.th<br>📱 โทร: 02-123-4567</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 นางสาวสมฤมัย สินค้า All Rights Reserved. | Web Development Week06</p>
+        </div>
+    </footer>
+
+    <script>
+        function switchPage(pageId) {
+            // 1. ซ่อนหน้าเนื้อหาทั้งหมดก่อน
+            const allPages = document.querySelectorAll('.page-content');
+            allPages.forEach(page => {
+                page.classList.remove('active-page');
+            });
+
+            // 2. แสดงเฉพาะหน้าเนื้อหาที่เรากดเลือก
+            document.getElementById('page-' + pageId).classList.add('active-page');
+
+            // 3. ลบสีไฮไลท์ (active) จากเมนูด้านบนทั้งหมดก่อน
+            const allMenuButtons = document.querySelectorAll('.nav-btn');
+            allMenuButtons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // 4. ใส่สีไฮไลท์ (active) ให้กับเมนูด้านบนที่เรากำลังเปิดอยู่ปัจจุบัน
+            document.getElementById('menu-' + pageId).classList.add('active');
+
+            // 5. เลื่อนหน้าจอขึ้นไปบนสุดโดยอัตโนมัติเมื่อเปลี่ยนหน้า
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+    </script>
+
+</body>
+</html>
